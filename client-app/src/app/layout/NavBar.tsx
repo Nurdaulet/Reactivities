@@ -1,21 +1,21 @@
-import { defaultCipherList } from 'constants';
+
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Button, Container, Menu } from 'semantic-ui-react';
 
-interface Props {
-    handleFormOpen: () => void;
-}
-export default function NavBar({ handleFormOpen }: Props) {
+
+export default function NavBar() {
+
     return (
         <Menu inverted fixed='top'>
             <Container>
-                <Menu.Item header>
+                <Menu.Item as={NavLink} to='/' exact header>
                     <img src="/assets/logo.png" alt="logo" style={{ marginRight: "10px" }} />
                     Reactivities
                 </Menu.Item>
-                <Menu.Item name="Activites" />
+                <Menu.Item as={NavLink} to='/activities' name="Activites" />
                 <Menu.Item>
-                    <Button onClick={handleFormOpen} positive content="Create Activity" />
+                    <Button as={NavLink} to='/createActivity' positive content="Create Activity" />
                 </Menu.Item>
             </Container>
         </Menu>
