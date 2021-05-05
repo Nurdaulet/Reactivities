@@ -6,7 +6,7 @@ import { store } from "./store";
 import { Profile } from "../models/profile";
 
 export default class ActivityStore {
-activityRegistry = new Map<string, Activity>();
+    activityRegistry = new Map<string, Activity>();
     initialLoading: boolean = false;
     loading: boolean = false;
     selectedActivity: Activity | undefined = undefined;
@@ -169,6 +169,10 @@ activityRegistry = new Map<string, Activity>();
         } finally {
             runInAction(() => this.loading = false);
         }
+    }
+
+    clearSelectedActivity = () => {
+        this.selectedActivity = undefined;
     }
 }
 
