@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
 {
-    public class DataContext : IdentityDbContext<AppUser>
+    public class DataContext : IdentityDbContext<AppUser>, IAuctionSystemDbContext
     {
         public DataContext(DbContextOptions options) : base(options)
         {
