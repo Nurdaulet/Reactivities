@@ -1,4 +1,6 @@
 
+using System.Threading;
+using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,31 @@ namespace Persistence
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<UserFollowing> UserFollowings { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<SubCategory> SubCategories { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Bid> Bids { get; set; }
+        public DbSet<Picture> Pictures { get; set; }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            foreach (var entry in this.ChangeTracker.Entries<AuditableEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedBy = this.currentUserService?.UserId;
+                        entry.Entity.Created = this.dateTime.UtcNow;
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.LastModifiedBy = this.currentUserService?.UserId;
+                        entry.Entity.LastModified = this.dateTime.UtcNow;
+                        break;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -37,21 +64,26 @@ namespace Persistence
                 .HasOne(a => a.Activity)
                 .WithMany(c => c.Comments)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<UserFollowing>(b =>
-            {
-                b.HasKey(k => new { k.ObserverId, k.TargetId });
-
-                b.HasOne(o => o.Observer)
-                    .WithMany(f => f.Followings)
-                    .HasForeignKey(o => o.ObserverId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                b.HasOne(o => o.Target)
-                    .WithMany(f => f.Followers)
-                    .HasForeignKey(o => o.TargetId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
         }
+    }
+
+    public interface IAuctionSystemDbContext
+    {
+        DbSet<Category> Categories { get; set; }
+
+        DbSet<SubCategory> SubCategories { get; set; }
+
+        DbSet<Item> Items { get; set; }
+
+        DbSet<Bid> Bids { get; set; }
+
+        DbSet<Picture> Pictures { get; set; }
+
+        DbSet<AppUser> Users { get; set; }
+        //DbSet<SaldoUser> SaldoUsers { get; set; }
+
+        // DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
