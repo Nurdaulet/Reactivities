@@ -10,18 +10,9 @@ namespace Persistence.Configurations
         public void Configure(EntityTypeBuilder<Comment> builder)
         {
             builder
-                .HasKey(p => p.Id);
-
-            builder
-                .Property(p => p.Amount)
-                .IsRequired();
-
-            builder
-                .Property(p => p.UserId)
-                .IsRequired();
-
-            builder
-                .Property(p => p.ItemId);
+                .HasOne(a => a.Activity)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
