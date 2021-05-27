@@ -1,6 +1,8 @@
 using System.Linq;
 using Application.Activities;
 using Application.Comments;
+using Application.Items;
+using Application.Pictures;
 using Application.Profiles;
 using Domain;
 
@@ -12,6 +14,8 @@ namespace Application.Core
         {
             string currentUsername = null;
             CreateMap<Activity, Activity>();
+            CreateMap<Item, ListItems>();
+            CreateMap<PictureResponseModel, Picture>();
             CreateMap<Activity, ActivityDto>()
                 .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees
                 .FirstOrDefault(x => x.IsHost).AppUser.UserName));
@@ -25,7 +29,7 @@ namespace Application.Core
                 .ForMember(d => d.Following, o =>
                     o.MapFrom(s => s.AppUser.Followers.Any(x => x.Observer.UserName == currentUsername))); ;
 
-            CreateMap<AppUser, Profiles.Profile>()
+            CreateMap<AppUser, Profile>()
                 .ForMember(d => d.Image, o => o.MapFrom(s => s.Photos.FirstOrDefault(x => x.IsMain).Url))
                 .ForMember(d => d.FollowersCount, o => o.MapFrom(s => s.Followers.Count))
                 .ForMember(d => d.FollowingCount, o => o.MapFrom(s => s.Followings.Count))

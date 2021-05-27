@@ -46,15 +46,16 @@ namespace Application.Items
                     .Items
                     .Include(i => i.Pictures)
                     .Include(u => u.User)
+                    .ProjectTo<ListItems>(_mapper.ConfigurationProvider)
                     .AsQueryable();
 
-                query = this.AddFiltersOnQuery(request.Params, query);
+                query = AddFiltersOnQuery(request.Params, query);
 
                 return Result<PagedList<ListItems>>.Success(await PagedList<ListItems>.CreateAsync(query,
                      request.Params.PageNumber, request.Params.PageSize));
             }
 
-            private IQueryable<Item> AddFiltersOnQuery(ItemParams filters, IQueryable<Item> queryable)
+            private IQueryable<ListItems> AddFiltersOnQuery(ItemParams filters, IQueryable<ListItems> queryable)
             {
                 if (!string.IsNullOrEmpty(filters?.Title))
                 {
