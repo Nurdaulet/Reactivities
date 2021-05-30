@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
 {
@@ -257,6 +258,45 @@ namespace Persistence
 
                 await context.Activities.AddRangeAsync(activities);
                 await context.SaveChangesAsync();
+            }
+        }
+
+        private async Task SeedItems(DataContext dbContext,
+            UserManager<AppUser> userManager)
+        {
+            if (!dbContext.Items.Any())
+            {
+                var random = new Random();
+                var allItems = new List<Item>();
+                foreach (var category in dbContext.Categories.Include(c => c.SubCategories))
+                {
+                    var i = 1;
+                    foreach (var subCategory in category.SubCategories)
+                    {
+                        var startTime = DateTime.UtcNow.AddDays(random.Next(0, 5)).ToUniversalTime();
+                        var item = new Item
+                        {
+                            Description = $"Test Description_{i}",
+                            Title = $"Test Title_{i}",
+                            StartTime = startTime,
+                            EndTime = startTime.AddHours(random.Next(1, 10)),
+                            StartingPrice = random.Next(10, 500),
+                            MinIncrease = random.Next(1, 100),
+                            SubCategoryId = subCategory.Id,
+                            Pictures = new List<Picture>
+                            {
+                                new Picture { Url = "", Created = DateTime.UtcNow }
+                            },
+                            UserId = userManager.Users.FirstOrDefault().Id
+                        };
+
+                        i++;
+                        allItems.Add(item);
+                    }
+                }
+
+                await dbContext.Items.AddRangeAsync(allItems);
+                await dbContext.SaveChangesAsync();
             }
         }
     }

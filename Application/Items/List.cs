@@ -2,12 +2,10 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Activities;
 using Application.Core;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -26,11 +24,13 @@ namespace Application.Items
             private readonly DataContext _context;
             private readonly IMapper _mapper;
             private readonly IUserAccessor _userAccessor;
-            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
+            private readonly IDateTime _dateTime;
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor, IDateTime dateTime)
             {
                 _userAccessor = userAccessor;
                 _mapper = mapper;
                 _context = context;
+                _dateTime = dateTime;
             }
 
             public async Task<Result<PagedList<ListItems>>> Handle(Query request, CancellationToken cancellationToken)
@@ -70,7 +70,7 @@ namespace Application.Items
                 if (filters?.GetLiveItems == true)
                 {
                     queryable = queryable.Where(i =>
-                        i.StartTime < this.dateTime.UtcNow && i.EndTime > this.dateTime.UtcNow);
+                        i.StartTime < _dateTime.UtcNow && i.EndTime > _dateTime.UtcNow);
                 }
 
                 if (filters?.MinPrice != null)
