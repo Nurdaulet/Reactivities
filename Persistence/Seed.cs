@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Persistence
 {
@@ -261,7 +263,7 @@ namespace Persistence
             }
         }
 
-        private async Task SeedItems(DataContext dbContext,
+        public static async Task SeedItems(DataContext dbContext,
             UserManager<AppUser> userManager)
         {
             if (!dbContext.Items.Any())
@@ -285,7 +287,7 @@ namespace Persistence
                             SubCategoryId = subCategory.Id,
                             Pictures = new List<Picture>
                             {
-                                new Picture { Url = "", Created = DateTime.UtcNow }
+                                new Picture { Url = "https://res.cloudinary.com/auctionsystem/image/upload/v1547833155/default-img.jpg", Created = DateTime.UtcNow }
                             },
                             UserId = userManager.Users.FirstOrDefault().Id
                         };
@@ -298,6 +300,42 @@ namespace Persistence
                 await dbContext.Items.AddRangeAsync(allItems);
                 await dbContext.SaveChangesAsync();
             }
+        }
+        public static async Task SeedCategories(DataContext dbContext)
+        {
+            if (!dbContext.Categories.Any())
+            {
+                var categories =
+                    await File.ReadAllTextAsync(Path.GetFullPath("../../Persistence/categories.json"));
+
+                var deserializedCategoriesWithSubCategories =
+                    JsonConvert.DeserializeObject<CategoryDto[]>(categories);
+
+                var allCategories = deserializedCategoriesWithSubCategories.Select(deserializedCategory => new Category
+                {
+                    Name = deserializedCategory.Name,
+                    SubCategories = deserializedCategory.SubCategoryNames.Select(deserializedSubCategory =>
+                        new SubCategory
+                        {
+                            Name = deserializedSubCategory.Name
+                        }).ToList()
+                }).ToList();
+
+                await dbContext.Categories.AddRangeAsync(allCategories);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        private class CategoryDto
+        {
+            public string Name { get; set; }
+
+            public SubCategoryDto[] SubCategoryNames { get; set; }
+        }
+
+        private class SubCategoryDto
+        {
+            public string Name { get; set; }
         }
     }
 }
