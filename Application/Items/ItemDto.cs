@@ -6,7 +6,7 @@ using Application.Pictures;
 
 namespace Application.Items
 {
-    public class ListItems
+    public class ItemDto
     {
         public Guid Id { get; set; }
 

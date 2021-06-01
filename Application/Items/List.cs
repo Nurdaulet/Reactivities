@@ -14,12 +14,12 @@ namespace Application.Items
 {
     public class List
     {
-        public class Query : IRequest<Result<PagedList<ListItems>>>
+        public class Query : IRequest<Result<PagedList<ItemDto>>>
         {
             public ItemParams Params { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Result<PagedList<ListItems>>>
+        public class Handler : IRequestHandler<Query, Result<PagedList<ItemDto>>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -33,7 +33,7 @@ namespace Application.Items
                 _dateTime = dateTime;
             }
 
-            public async Task<Result<PagedList<ListItems>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<PagedList<ItemDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 //var query = _context.Activities
                 //.Where(d => d.Date >= request.Params.StartDate)
@@ -46,16 +46,16 @@ namespace Application.Items
                     .Items
                     .Include(i => i.Pictures)
                     .Include(u => u.User)
-                    .ProjectTo<ListItems>(_mapper.ConfigurationProvider)
+                    .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
                     .AsQueryable();
 
                 query = AddFiltersOnQuery(request.Params, query);
 
-                return Result<PagedList<ListItems>>.Success(await PagedList<ListItems>.CreateAsync(query,
+                return Result<PagedList<ItemDto>>.Success(await PagedList<ItemDto>.CreateAsync(query,
                      request.Params.PageNumber, request.Params.PageSize));
             }
 
-            private IQueryable<ListItems> AddFiltersOnQuery(ItemParams filters, IQueryable<ListItems> queryable)
+            private IQueryable<ItemDto> AddFiltersOnQuery(ItemParams filters, IQueryable<ItemDto> queryable)
             {
                 if (!string.IsNullOrEmpty(filters?.Title))
                 {

@@ -4,6 +4,7 @@ using Application.Core;
 using Application.Interfaces;
 using Infrastructure;
 using Infrastructure.Photos;
+using Infrastructure.Redis;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +78,25 @@ namespace API.Extensions
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
             services.AddSignalR();
+            return services;
+        }
+
+        public static IServiceCollection AddRedisCache(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var redisCacheSettings = new RedisCacheOptions();
+            configuration.GetSection("RedisCacheSettings").Bind(redisCacheSettings);
+            services.AddSingleton(redisCacheSettings);
+
+            if (!redisCacheSettings.Enabled)
+            {
+                return services;
+            }
+
+            services.AddStackExchangeRedisCache(options => options.Configuration = redisCacheSettings.ConnectionString);
+            services.AddSingleton<IResponseCacheService, ResponseCacheService>();
+
             return services;
         }
     }

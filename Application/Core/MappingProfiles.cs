@@ -1,5 +1,6 @@
 using System.Linq;
 using Application.Activities;
+using Application.Categories;
 using Application.Comments;
 using Application.Items;
 using Application.Pictures;
@@ -14,8 +15,10 @@ namespace Application.Core
         {
             string currentUsername = null;
             CreateMap<Activity, Activity>();
-            CreateMap<Item, ListItems>();
-            CreateMap<PictureResponseModel, Picture>();
+            CreateMap<Item, ItemDto>();
+            CreateMap<Picture, PictureResponseModel>();
+            CreateMap<Category, CategoryDto>();
+            CreateMap<SubCategory, SubCategoriesDto>();
             CreateMap<Activity, ActivityDto>()
                 .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees
                 .FirstOrDefault(x => x.IsHost).AppUser.UserName));
