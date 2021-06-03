@@ -22,7 +22,8 @@ namespace API.Controllers
             typeof(Result<PagedList<CategoryDto>>))]
         [SwaggerResponse(
             StatusCodes.Status404NotFound,
-            SwaggerDocumentation.CategoriesConstants.BadRequestDescriptionMessage)]
+            SwaggerDocumentation.CategoriesConstants.BadRequestDescriptionMessage,
+            typeof(string))]
         public async Task<IActionResult> Get()
         {
             var result = await Mediator.Send(new List.Query());

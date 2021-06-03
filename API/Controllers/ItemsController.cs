@@ -4,6 +4,7 @@ using API.Common;
 using API.SwaggerExamples;
 using Application.Core;
 using Application.Items;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,29 +45,26 @@ namespace API.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var result = await Mediator.Send(new Details.Query{Id = id});
-            return Ok(result);
+            return HandleResult(result);
         }
 
         /// <summary>
         /// Creates item
         /// </summary>
-        [Authorize]
         [HttpPost]
         [SwaggerResponse(
             StatusCodes.Status201Created,
-            SwaggerDocumentation.ItemConstants.SuccessfulPostRequestDescriptionMessage,
-            typeof(Response<ItemResponseModel>))]
+            SwaggerDocumentation.ItemConstants.SuccessfulPostRequestDescriptionMessage)]
         [SwaggerResponse(
             StatusCodes.Status400BadRequest,
             SwaggerDocumentation.ItemConstants.BadRequestDescriptionMessage,
-            typeof(BadRequestErrorModel))]
+            typeof(string))]
         [SwaggerResponse(
             StatusCodes.Status401Unauthorized,
             SwaggerDocumentation.UnauthorizedDescriptionMessage)]
-        public async Task<IActionResult> Post([FromForm] CreateItemCommand model)
+        public async Task<IActionResult> Post([FromForm] CreateItemModel model)
         {
-            var result = await this.Mediator.Send(model);
-            return CreatedAtAction(nameof(this.Post), result);
+            return HandleResult(await Mediator.Send(new Create.Command {Item = model}));
         }
 
         /// <summary>
@@ -80,22 +78,18 @@ namespace API.Controllers
             SwaggerDocumentation.ItemConstants.SuccessfulPutRequestDescriptionMessage)]
         [SwaggerResponse(
             StatusCodes.Status400BadRequest,
-            SwaggerDocumentation.ItemConstants.BadRequestDescriptionMessage)]
+            SwaggerDocumentation.ItemConstants.BadRequestDescriptionMessage,
+            typeof(string))]
         [SwaggerResponse(
             StatusCodes.Status404NotFound,
             SwaggerDocumentation.ItemConstants.NotFoundDescriptionMessage)]
         [SwaggerResponse(
             StatusCodes.Status401Unauthorized,
             SwaggerDocumentation.UnauthorizedDescriptionMessage)]
-        public async Task<IActionResult> Put(Guid id, [FromForm] UpdateItemCommand model)
+        public async Task<IActionResult> Put(Guid id, [FromForm] UpdateItemModel model)
         {
-            if (id != model.Id)
-            {
-                return this.BadRequest();
-            }
-
-            await this.Mediator.Send(model);
-            return this.NoContent();
+            model.Id = id;
+            return HandleResult(await Mediator.Send(new Edit.Command { UpdateItem = model }));
         }
 
         /// <summary>
