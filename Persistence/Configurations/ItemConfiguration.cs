@@ -46,7 +46,7 @@ namespace Persistence.Configurations
                 .IsRequired();
 
             builder
-                .Property(p => p.UserId)
+                .Property(p => p.Username)
                 .IsRequired();
 
             builder

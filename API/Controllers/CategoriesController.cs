@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Common;
 using API.SwaggerExamples;
@@ -19,7 +20,7 @@ namespace API.Controllers
         [SwaggerResponse(
             StatusCodes.Status200OK,
             SwaggerDocumentation.CategoriesConstants.SuccessfulGetRequestMessage,
-            typeof(Result<PagedList<CategoryDto>>))]
+            typeof(Result<List<CategoryDto>>))]
         [SwaggerResponse(
             StatusCodes.Status404NotFound,
             SwaggerDocumentation.CategoriesConstants.BadRequestDescriptionMessage,
@@ -27,7 +28,7 @@ namespace API.Controllers
         public async Task<IActionResult> Get()
         {
             var result = await Mediator.Send(new List.Query());
-            return Ok(result);
+            return HandleResult(result);
         }
     }
 }

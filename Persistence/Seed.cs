@@ -289,7 +289,7 @@ namespace Persistence
                             {
                                 new Picture { Url = "https://res.cloudinary.com/auctionsystem/image/upload/v1547833155/default-img.jpg", Created = DateTime.UtcNow }
                             },
-                            UserId = userManager.Users.FirstOrDefault().Id
+                            Username = userManager?.Users?.FirstOrDefault()?.UserName
                         };
 
                         i++;

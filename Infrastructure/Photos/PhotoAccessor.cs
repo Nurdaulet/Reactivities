@@ -56,5 +56,15 @@ namespace Infrastructure.Photos
             var result = await _cloudinary.DestroyAsync(deleteParams);
             return result.Result == "ok" ? "ok" : null;
         }
+
+        public async Task<ImageUploadResult> UploadAsync(ImageUploadParams uploadParams)
+        {
+            return await _cloudinary.UploadAsync(uploadParams);
+        }
+
+        public async Task<DelResResult> DeleteResourcesByPrefixAsync(string prefix)
+        {
+            return await _cloudinary.DeleteResourcesByPrefixAsync(prefix);
+        }
     }
 }

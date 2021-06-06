@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Application.Photos;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
@@ -8,5 +9,7 @@ namespace Application.Interfaces
     {
         Task<PhotoUploadResult> AddPhoto(IFormFile file);
         Task<string> DeletePhoto(string publicId);
+        Task<ImageUploadResult> UploadAsync(ImageUploadParams uploadParams);
+        Task<DelResResult> DeleteResourcesByPrefixAsync(string prefix);
     }
 }

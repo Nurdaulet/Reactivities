@@ -21,5 +21,17 @@ namespace API.SwaggerExamples
             public const string SuccessfulPutRequestDescriptionMessage = "Item is updated successfully";
             public const string SuccessfulDeleteRequestDescriptionMessage = "Indicates that item is deleted successfully";
         }
+        public static class PictureConstants
+        {
+            public const string BadRequestDescriptionMessage =
+                "Indicates that picture either does not exist or user does not have permission to delete it";
+
+            public const string SuccessfulGetRequestDescriptionMessage =
+                "Pictures were uploaded successfully and their corresponding data will be returned";
+
+            public const string SuccessfulDeleteRequestDescriptionMessage = "Picture is deleted successfully";
+
+            public const string SuccessfulGetPictureDetailsRequestDescriptionMessage = "Pictures were retrieved successfully and returned";
+        }
     }
 }

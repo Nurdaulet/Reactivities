@@ -19,7 +19,7 @@ namespace Persistence.Configurations
             builder
                 .HasMany(b => b.ItemsSold)
                 .WithOne(u => u.User)
-                .HasForeignKey(u => u.UserId)
+                .HasForeignKey(u => u.Username)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

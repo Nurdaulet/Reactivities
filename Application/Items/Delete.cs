@@ -4,7 +4,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
-using AutoMapper;
+using Application.Interfaces;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -16,39 +17,42 @@ namespace Application.Items
         {
             public Guid Id { get; set; }
         }
+
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.Id).NotEmpty(); 
+            }
+        }
+
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, IUserAccessor userAccessor)
             {
                 _context = context;
+                _userAccessor = userAccessor;
             }
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = await _context.Activities.FindAsync(request.Activity.Id);
-                if (activity == null) return null;
-
-                _mapper.Map(request.Activity, activity);
-
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Unit>.Failure("Failed to edit activity");
-                return Result<Unit>.Success(Unit.Value);
-
-
                 var itemToDelete = await _context
                     .Items
                     .FindAsync(request.Id);
 
                 if (itemToDelete == null
-                    || itemToDelete.UserId != this.currentUserService.UserId && !this.currentUserService.IsAdmin)
+                    || itemToDelete.Username != _userAccessor.GetUsername()) //&& !this.currentUserService.IsAdmin
                 {
-                    throw new NotFoundException(nameof(Item));
+                    return null;
                 }
 
-                this.context.Items.Remove(itemToDelete);
-                await this.context.SaveChangesAsync(cancellationToken);
-                await this.mediator.Publish(new ItemDeletedNotification(itemToDelete.Id), cancellationToken);
+                _context.Items.Remove(itemToDelete);
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result) return Result<Unit>.Failure("Failed to delete the activity");
+                await _mediator.Publish(new ItemDeletedNotification(itemToDelete.Id), cancellationToken);
+                return Result<Unit>.Success(Unit.Value);
             }
         }
     }

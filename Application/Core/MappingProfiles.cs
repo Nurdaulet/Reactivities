@@ -18,6 +18,7 @@ namespace Application.Core
             CreateMap<Item, ItemDto>();
             CreateMap<Picture, PictureResponseModel>();
             CreateMap<Category, CategoryDto>();
+            CreateMap<Picture, PictureDetailsResponseModel>();
             CreateMap<SubCategory, SubCategoriesDto>();
             CreateMap<Activity, ActivityDto>()
                 .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees
