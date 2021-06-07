@@ -33,5 +33,14 @@ namespace API.SwaggerExamples
 
             public const string SuccessfulGetPictureDetailsRequestDescriptionMessage = "Pictures were retrieved successfully and returned";
         }
+
+        public static class BidConstants
+        {
+            public const string SuccessfulPostRequestDescriptionMessage = "Indicates that bid is created successfully";
+            public const string BadRequestOnPostRequestDescriptionMessage = "Indicates that the data is invalid";
+            public const string NotFoundOnPostRequestDescriptionMessage = "Indicates that such item does not exist";
+
+            public const string GetHighestBidDescriptionMessage = "Retrieves the highest bid otherwise returns null";
+        }
     }
 }
