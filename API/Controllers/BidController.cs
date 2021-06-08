@@ -27,7 +27,7 @@ namespace API.Controllers
             SwaggerDocumentation.BidConstants.NotFoundOnPostRequestDescriptionMessage)]
         public async Task<IActionResult> Post([FromBody] CreateBidModel model)
         {
-            var result = await Mediator.Send(model);
+            var result = await Mediator.Send(new Create.Command{CreateBid = model});
             return HandleResult(result);
         }
 
@@ -39,7 +39,7 @@ namespace API.Controllers
             typeof(GetHighestBidDetailsResponseModel))]
         public async Task<IActionResult> GetHighestBid(Guid itemId)
         {
-            var result = await this.Mediator.Send(new GetHighestBidDetailsQuery(itemId));
+            var result = await Mediator.Send(new GetHighestBidDetails.Query{Id = itemId});
             return this.Ok(result);
         }
     }

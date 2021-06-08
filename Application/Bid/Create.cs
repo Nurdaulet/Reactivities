@@ -2,11 +2,9 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Activities;
 using Application.Core;
 using Application.Interfaces;
 using AutoMapper;
-using Domain;
 using FluentValidation;
 using MediatR;
 using System.Linq;
@@ -27,7 +25,7 @@ namespace Application.Bid
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Activity).SetValidator(new CreateBidValidator());
+                RuleFor(x => x.CreateBid).SetValidator(new CreateBidValidator());
             }
         }
 
@@ -36,17 +34,22 @@ namespace Application.Bid
             private readonly DataContext _context;
             private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IUserAccessor userAccessor, IMapper mapper)
+            private readonly IDateTime _dateTime;
+            public Handler(DataContext context, IUserAccessor userAccessor, IMapper mapper, IDateTime dateTime)
             {
                 _userAccessor = userAccessor;
                 _context = context;
                 _mapper = mapper;
+                _dateTime = dateTime;
             }
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                await CheckWhetherItemIsEligibleForBidding(request.CreateBid, cancellationToken);
-
+                var result = await CheckWhetherItemIsEligibleForBidding(request.CreateBid, cancellationToken);
+                if (!result.IsSuccess)
+                {
+                    return result;
+                }
                 var bid = _mapper.Map<Domain.Bid>(request);
                 await _context.Bids.AddAsync(bid, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
@@ -83,25 +86,25 @@ namespace Application.Bid
                     return null;
                 }
 
-                if (item.StartTime >= this.dateTime.UtcNow)
+                if (item.StartTime >= _dateTime.UtcNow)
                 {
                     //Bid hasn't started yet.
-                    throw new BadRequestException(
-                        string.Format(ExceptionMessages.Bid.BiddingNotStartedYet, request.ItemId));
+                    return Result<Unit>.Failure(ExceptionMessages.Bid.BiddingNotStartedYet);
                 }
 
-                if (item.EndTime <= this.dateTime.UtcNow)
+                if (item.EndTime <= _dateTime.UtcNow)
                 {
                     // Bidding has ended
-                    throw new BadRequestException(
-                        string.Format(ExceptionMessages.Bid.BiddingHasEnded, request.ItemId));
+                    return Result<Unit>.Failure(ExceptionMessages.Bid.BiddingHasEnded);
                 }
 
                 if (request.Amount <= item.HighestBidAmount
                     || request.Amount <= item.StartingPrice)
                 {
-                    throw new BadRequestException(ExceptionMessages.Bid.InvalidBidAmount);
+                    return Result<Unit>.Failure(ExceptionMessages.Bid.InvalidBidAmount);
                 }
+
+                return Result<Unit>.Success(Unit.Value);
             }
         }
     }
