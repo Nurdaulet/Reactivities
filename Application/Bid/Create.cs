@@ -1,5 +1,6 @@
 ﻿
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
@@ -18,14 +19,20 @@ namespace Application.Bid
 
         public class Command : IRequest<Result<Unit>>
         {
-            public CreateBidModel CreateBid { get; set; }
+            public decimal Amount { get; set; }
+
+            public Guid ItemId { get; set; }
+            public string Username { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>
         {
             public CommandValidator()
             {
-                RuleFor(x => x.CreateBid).SetValidator(new CreateBidValidator());
+                RuleFor(p => p.Amount).NotEmpty()
+                    .InclusiveBetween(ModelConstants.Bid.MinAmount, ModelConstants.Bid.MaxAmount);
+                RuleFor(p => p.ItemId).NotEmpty();
+                RuleFor(p => p.Username).NotEmpty();
             }
         }
 
@@ -45,7 +52,7 @@ namespace Application.Bid
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var result = await CheckWhetherItemIsEligibleForBidding(request.CreateBid, cancellationToken);
+                var result = await CheckWhetherItemIsEligibleForBidding(request, cancellationToken);
                 if (!result.IsSuccess)
                 {
                     return result;
@@ -57,7 +64,7 @@ namespace Application.Bid
                 return Result<Unit>.Success(Unit.Value);
             }
 
-            private async Task<Result<Unit>> CheckWhetherItemIsEligibleForBidding(CreateBidModel request,
+            private async Task<Result<Unit>> CheckWhetherItemIsEligibleForBidding(Command request,
                 CancellationToken cancellationToken)
             {
                 var item = await _context

@@ -4,7 +4,7 @@ using System;
 
 namespace Application.Bid
 {
-    public class CreateBidModel
+    public class BidModel
     {
         public decimal Amount { get; set; }
 

@@ -1,5 +1,6 @@
 using System.Linq;
 using Application.Activities;
+using Application.Bid;
 using Application.Categories;
 using Application.Comments;
 using Application.Items;
@@ -16,6 +17,7 @@ namespace Application.Core
             string currentUsername = null;
             CreateMap<Activity, Activity>();
             CreateMap<Item, ItemDto>();
+            CreateMap<Domain.Bid, BidModel>();
             CreateMap<Picture, PictureResponseModel>();
             CreateMap<Category, CategoryDto>();
             CreateMap<Picture, PictureDetailsResponseModel>();
