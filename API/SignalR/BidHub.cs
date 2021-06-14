@@ -29,7 +29,7 @@ namespace API.SignalR
             var itemId = httpContext.Request.Query["itemId"];
             await Groups.AddToGroupAsync(Context.ConnectionId, itemId);
             var result = await _mediator.Send(new List.Query { ItemId = Guid.Parse(itemId) });
-            await Clients.Caller.SendAsync("LoadComments", result.Value);
+            await Clients.Caller.SendAsync("LoadBids", result.Value);
         }
     }
 }

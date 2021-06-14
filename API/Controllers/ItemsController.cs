@@ -4,7 +4,6 @@ using API.Common;
 using API.SwaggerExamples;
 using Application.Core;
 using Application.Items;
-using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -109,8 +108,7 @@ namespace API.Controllers
             SwaggerDocumentation.UnauthorizedDescriptionMessage)]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await this.Mediator.Send(new DeleteItemCommand(id));
-            return this.NoContent();
+            return HandleResult(await Mediator.Send(new Delete.Command{Id = id}));
         }
     }
 }
