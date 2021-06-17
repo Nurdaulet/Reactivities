@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using Application.Interfaces;
+using Application.Notifications.Models;
 using FluentValidation;
 using MediatR;
 using Persistence;
@@ -29,11 +30,13 @@ namespace Application.Items
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
+            private readonly IMediator _mediator;
             private readonly IUserAccessor _userAccessor;
-            public Handler(DataContext context, IUserAccessor userAccessor)
+            public Handler(DataContext context, IMediator mediator, IUserAccessor userAccessor)
             {
                 _context = context;
                 _userAccessor = userAccessor;
+                _mediator = mediator;
             }
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)

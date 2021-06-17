@@ -66,5 +66,10 @@ namespace Infrastructure.Photos
         {
             return await _cloudinary.DeleteResourcesByPrefixAsync(prefix);
         }
+
+        public async Task<DeleteFolderResult> DeleteFolderAsync(string folder)
+        {
+            return await _cloudinary.DeleteFolderAsync(folder);
+        }
     }
 }

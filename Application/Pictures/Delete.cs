@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
 using Application.Interfaces;
+using Application.Notifications.Models;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,8 @@ namespace Application.Pictures
             }
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<Unit>>,
+        INotificationHandler<ItemDeletedNotification>
         {
             private readonly DataContext _context;
             private readonly IUserAccessor _userAccessor;
@@ -77,7 +79,13 @@ namespace Application.Pictures
                 }
 
                 return Result<Unit>.Success(Unit.Value);
-            }   
+            }
+
+            public async Task Handle(ItemDeletedNotification notification, CancellationToken cancellationToken)
+            {
+                await _photoAccessor.DeleteResourcesByPrefixAsync($"{notification.ItemId}/");
+                await _photoAccessor.DeleteFolderAsync($"{notification.ItemId}");
+            }
 
             private async Task AddDefaultPicture(Guid itemId)
                 => await _mediator.Send(new CreatePictureModel { ItemId = itemId });

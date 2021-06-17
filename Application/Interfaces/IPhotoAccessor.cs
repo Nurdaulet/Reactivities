@@ -11,5 +11,6 @@ namespace Application.Interfaces
         Task<string> DeletePhoto(string publicId);
         Task<ImageUploadResult> UploadAsync(ImageUploadParams uploadParams);
         Task<DelResResult> DeleteResourcesByPrefixAsync(string prefix);
+        Task<DeleteFolderResult> DeleteFolderAsync(string prefix);
     }
 }
