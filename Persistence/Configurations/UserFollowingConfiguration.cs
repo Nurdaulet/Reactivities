@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence.Configurations
 {
-    public class UserFollowingConfiguration
+    public class UserFollowingConfiguration: IEntityTypeConfiguration<UserFollowing>
     {
         public void Configure(EntityTypeBuilder<UserFollowing> builder)
         {

@@ -270,10 +270,10 @@ namespace Persistence
             {
                 var random = new Random();
                 var allItems = new List<Item>();
-                foreach (var category in dbContext.Categories.Include(c => c.SubCategories))
+                foreach (var category in dbContext.Categories.Include(c => c.SubCategories).ToList())
                 {
                     var i = 1;
-                    foreach (var subCategory in category.SubCategories)
+                    foreach (var subCategory in category.SubCategories.ToList())
                     {
                         var startTime = DateTime.UtcNow.AddDays(random.Next(0, 5)).ToUniversalTime();
                         var item = new Item
@@ -306,7 +306,7 @@ namespace Persistence
             if (!dbContext.Categories.Any())
             {
                 var categories =
-                    await File.ReadAllTextAsync(Path.GetFullPath("../../Persistence/categories.json"));
+                    await File.ReadAllTextAsync(Path.GetFullPath("../Persistence/categories.json"));
 
                 var deserializedCategoriesWithSubCategories =
                     JsonConvert.DeserializeObject<CategoryDto[]>(categories);
