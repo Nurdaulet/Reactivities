@@ -13,8 +13,8 @@ namespace Domain
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public bool IsEmailSent { get; set; } = false;
-
         public string Username { get; set; }
+        public string UserId { get; set; }
         public AppUser User { get; set; }
 
         public Guid SubCategoryId { get; set; }

@@ -16,7 +16,7 @@ import LoadingComponent from './LoadingComponent';
 import ModalContainer from '../common/modals/ModalContainer';
 import ProfilePage from '../../features/profiles/ProfilePage';
 import PrivateRoute from './PrivateRoute';
-import { List } from "../../features/items/List/List";
+//import { List } from "../../features/items/List/List";
 
 function App() {
 
@@ -42,7 +42,7 @@ function App() {
         path={'/(.+)'}
         render={() => (
           <>
-            <NavBar />
+            <NavBar>
             <Container style={{ marginTop: '7em' }}>
               <Switch>
                 <PrivateRoute exact path='/activities' component={ActivityDashboard} />
@@ -51,10 +51,10 @@ function App() {
                 <PrivateRoute path='/profiles/:username' component={ProfilePage} />
                 <PrivateRoute path='/errors' component={TestErrors} />
                 <Route path='/server-error' component={ServerError} />
-                <Route exact path="/items/:subCategoryId?" component={List} />
                 <Route component={NotFound} />
               </Switch>
             </Container>
+            </NavBar>
           </>
         )
         }

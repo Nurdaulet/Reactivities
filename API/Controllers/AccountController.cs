@@ -7,7 +7,7 @@ using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore; 
 
 namespace API.Controllers
 {
@@ -82,6 +82,7 @@ namespace API.Controllers
         {
             var user = await _userManager.Users.Include(p => p.Photos)
                         .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
+            if (user == null) return Unauthorized();
             return CreateUserObject(user);
         }
 
